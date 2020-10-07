@@ -1,47 +1,101 @@
 import * as THREE from "three";
-import Tree from "./components/Tree.js";
+import Stats from "./libs/jsm/libs/stats.module.js";
 
-// Global Variable: Scene, camera and renderer
-let scene, camera, renderer;
-function init() {
-  scene = new THREE.Scene();
+import Ground from "./components/Ground.js";
+import Light from "./scene/light/Light.js";
+import { OrbitControls } from "./libs/jsm/controls/OrbitControls.js";
+import { MD2CharacterComplex } from "./libs/jsm/misc/MD2CharacterComplex.js";
+import { Gyroscope } from "./libs/jsm/misc/Gyroscope.js";
+import GrassImage from "./textures/ground/grasslight-big.png";
 
-  camera = new THREE.PerspectiveCamera(
-    80,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
-  camera.position.z = 5;
+// Global variables
+let SCREEN_WIDTH = window.innerWidth;
+let SCREEN_HEIGHT = window.innerHeight;
+let container, stats;
+let camera, scene, renderer;
+let cameraControls;
+let controls = {
+  moveForward: false,
+  moveBackward: false,
+  moveLeft: false,
+  moveRight: false,
+};
 
-  renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, innerHeight);
-  document.body.appendChild(renderer.domElement);
-}
+let clock = new THREE.Clock();
+
+// Run
 init();
+animate();
 
-// Tree
-let tree = Tree();
-tree.rotation.x = 0.5;
-tree.rotation.y = 1;
-scene.add(tree);
-tree.scale.set(0.5, 0.5, 0.5);
+function init() {
+  container = document.body;
 
-// Light
-let lightOne = new THREE.DirectionalLight(0xeeffd3, 1);
-let lightTwo = new THREE.DirectionalLight(0xff0000, 0.4);
-let lightThree = new THREE.DirectionalLight(0xffffff, 0.2);
+  // Camera
+  camera = new THREE.PerspectiveCamera(
+    45,
+    SCREEN_WIDTH / SCREEN_HEIGHT,
+    1,
+    4000
+  );
+  camera.position.set(0, 150, 1300);
 
-lightOne.position.set(0, 0, 1);
-lightTwo.position.set(1, 0, 1);
-lightThree.position.set(0, 1, 0);
-scene.add(lightOne);
-scene.add(lightTwo);
-scene.add(lightThree);
+  // Scene
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff);
+  scene.fog = new THREE.Fog(0xffffff, 1000, 4000);
+
+  scene.add(camera);
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0x222222));
+  let lightObject = new Light(200, 450, 500, 0xffffff, 2.0);
+  let light = lightObject.create();
+  scene.add(light);
+
+  // Ground
+  let groundObject = new Ground(1600, 64, GrassImage);
+  let ground = groundObject.create();
+  scene.add(ground);
+
+  // Renderer
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+  container.appendChild(renderer.domElement);
+
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  // Stats
+  stats = new Stats();
+  container.appendChild(stats.dom);
+
+  // EVENTS
+  window.addEventListener("resize", onWindowResize, false);
+
+  // Controls
+  cameraControls = new OrbitControls(camera, renderer.domElement);
+  cameraControls.target.set(0, 150, 0);
+  cameraControls.enableKeys = false;
+  cameraControls.update();
+}
+
+// EVENT HANDLERS
+function onWindowResize() {
+  SCREEN_WIDTH = window.innerWidth;
+  SCREEN_HEIGHT = window.innerHeight;
+
+  renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+  camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+  camera.updateProjectionMatrix();
+}
 
 function animate() {
   requestAnimationFrame(animate);
-  tree.rotation.y += 0.007;
+  render();
+}
+function render() {
   renderer.render(scene, camera);
 }
-animate();
