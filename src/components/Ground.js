@@ -20,7 +20,7 @@ class Ground {
     // ground.material.map.wrapS = THREE.RepeatWrapping;
     // ground.material.map.wrapT = THREE.RepeatWrapping;
     // ground.material.map.encoding = THREE.sRGBEncoding;
-    // ground.receiveShadow = true;
+    ground.receiveShadow = true;
 
     this._ground = ground;
     return ground;

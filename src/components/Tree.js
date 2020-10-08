@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import CONSTANTS from "../utils/contants";
 
 class TreeComponent {
   constructor(geometry, color, position, scale) {
@@ -84,4 +85,29 @@ export default function Tree() {
   tree.add(lightLeaf);
   tree.add(stem);
   return tree;
+}
+
+export function Trees(n) {
+  let trees = [];
+  const scaleHeight = 37 / (CONSTANTS.SIZE_GROUND / 50);
+  for (let i = 0; i < n; i++) {
+    let tree = Tree();
+    let scale = 50 + Math.random() * (100 - 50);
+    let x =
+      Math.random() * (CONSTANTS.SIZE_GROUND - 200) -
+      (CONSTANTS.SIZE_GROUND / 2 - 100);
+    let y = scaleHeight * (CONSTANTS.SIZE_GROUND / scale);
+    let z =
+      Math.random() * (CONSTANTS.SIZE_GROUND - 200) -
+      (CONSTANTS.SIZE_GROUND / 2 - 100);
+
+    tree.position.set(x, y, z);
+    tree.scale.set(
+      CONSTANTS.SIZE_GROUND / scale,
+      CONSTANTS.SIZE_GROUND / scale,
+      CONSTANTS.SIZE_GROUND / scale
+    );
+    trees.push(tree);
+  }
+  return trees;
 }
