@@ -13,6 +13,8 @@ let CONSTANTS = {
     x: 0,
     y: 0,
     z: 0,
+    movementSpeed: 5,
+    mass: 100,
   },
 };
 

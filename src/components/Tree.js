@@ -75,6 +75,7 @@ export default function Tree() {
     [0.3, 1.5, 0.3]
   );
   stem = stem.create();
+  stem.name = "stem";
 
   // Tree
   let tree = new THREE.Group();
