@@ -6,7 +6,7 @@ let CONSTANTS = {
   WHITE: 0xffffff,
   SIZE_GROUND: 3000,
   REAPEAT: 64,
-  N_TREE: 50,
+  N_TREE: 100,
   INITAL_POSITION: { x: 0, y: 10, z: 0 },
   VISITOR: {
     color: 0xe0c99d,

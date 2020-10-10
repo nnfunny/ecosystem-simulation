@@ -6,15 +6,14 @@ import Light from "./scene/light/Light.js";
 import { PointerLockControls } from "./libs/jsm/controls/PointerLockControls.js";
 import GrassImage from "./textures/ground/grasslight-big.png";
 import Visitor from "./components/Visitor.js";
-import { getDistance } from "./utils/index.js";
 
 // Global variables
 let container, stats, visitor;
 let camera, scene, renderer, controls;
 
 // Controls
-let objects = [];
-let raycaster;
+let collidableMeshList = [];
+let onObjectRay;
 let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
@@ -73,15 +72,16 @@ function init() {
   trees.forEach((tree) => {
     tree.castShadow = true;
     scene.add(tree);
-    objects.push(tree);
+    collidableMeshList.push(tree);
   });
 
   // Visitor
-  let visitorObj = new Visitor(CONSTANTS.VISITOR.color, 20, 20, 20);
+  let visitorObj = new Visitor(CONSTANTS.VISITOR.color, 10, 10, 10);
   visitor = visitorObj.create();
   visitor.position.set(10, 5, 10);
+  visitor.visible = false;
   scene.add(visitor);
-  objects.push(visitor);
+  camera.add(visitor);
 
   // Renderer
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -99,7 +99,7 @@ function init() {
   document.addEventListener("keyup", onKeyUp, false);
 
   // Raycaster for onObject
-  raycaster = new THREE.Raycaster(
+  onObjectRay = new THREE.Raycaster(
     new THREE.Vector3(),
     new THREE.Vector3(0, -1, 0),
     0,
@@ -195,9 +195,9 @@ function animate() {
 function render() {
   if (controls.isLocked === true) {
     // Raycaster for jumping
-    raycaster.ray.origin.copy(controls.getObject().position);
-    raycaster.ray.origin.y -= 10;
-    let intersections = raycaster.intersectObjects(objects);
+    onObjectRay.ray.origin.copy(controls.getObject().position);
+    onObjectRay.ray.origin.y -= 10;
+    let intersections = onObjectRay.intersectObjects(collidableMeshList);
     let onObject = intersections.length > 0;
 
     // Get time change
@@ -222,36 +222,30 @@ function render() {
     }
 
     // Collision with other objects
-    for (let i = 0; i < objects.length; i++) {
-      let objA = controls.getObject();
-      let objB = objects[i];
-      let distance = getDistance(objA, objB);
-      // Create a box to get sizes
-      let box = new THREE.Box3().setFromObject(objB);
-      let vector = new THREE.Vector3();
-      let width1 = box.getSize(vector).x;
-      let width2 = box.getSize(vector).z;
-      let height = Math.abs(box.getSize(vector).y / 2 - objB.position.y);
-      let actualDistance = Math.sqrt(distance * distance - height * height);
+    visitor.position.copy(controls.getObject().position);
+    let originPoint = visitor.position.clone();
+    // console.log(originPoint);
+    for (
+      let vertexIndex = 0;
+      vertexIndex < visitor.geometry.vertices.length;
+      vertexIndex++
+    ) {
+      let localVertex = visitor.geometry.vertices[vertexIndex].clone();
+      let globalVertex = localVertex.applyMatrix4(visitor.matrix);
+      let directionVector = globalVertex.sub(visitor.position);
 
-      if (i < CONSTANTS.N_TREE) {
-        if (
-          actualDistance <= width1 / 2 - 20 ||
-          actualDistance < width2 / 2 - 20 ||
-          actualDistance === NaN
-        ) {
-          velocity.x = Math.max(0, velocity.x);
-          velocity.z = Math.max(0, velocity.z);
-        }
-      } else {
-        if (
-          actualDistance <= width1 / 2 + 5 ||
-          actualDistance < width2 / 2 + 5 ||
-          actualDistance === NaN
-        ) {
-          velocity.x = Math.max(0, velocity.x);
-          velocity.z = Math.max(0, velocity.z);
-        }
+      let ray = new THREE.Raycaster(
+        originPoint,
+        directionVector.clone().normalize()
+      );
+      let collisionResults = ray.intersectObjects(collidableMeshList, true);
+      if (
+        collisionResults.length > 0 &&
+        collisionResults[0].distance < directionVector.length()
+      ) {
+        // console.log(collisionResults);
+        velocity.x = Math.max(0, velocity.x);
+        velocity.z = Math.max(0, velocity.z);
       }
     }
 
