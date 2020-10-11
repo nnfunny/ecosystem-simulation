@@ -95,13 +95,11 @@ export function Trees(n) {
     let tree = Tree();
     let scale = 50 + Math.random() * (100 - 50);
     let x =
-      Math.random() * (CONSTANTS.SIZE_GROUND - 200) -
-      (CONSTANTS.SIZE_GROUND / 2 - 100);
+      Math.random() * (CONSTANTS.SIZE_GROUND - 200) +
+      (-CONSTANTS.SIZE_GROUND / 2 + 100);
     let y = scaleHeight * (CONSTANTS.SIZE_GROUND / scale);
     let z =
-      Math.random() * (CONSTANTS.SIZE_GROUND - 200) -
-      (CONSTANTS.SIZE_GROUND / 2 - 100);
-
+      Math.random() * (-400 - (CONSTANTS.SIZE_GROUND / 2 - 100) - 0) - -400;
     tree.position.set(x, y, z);
     tree.scale.set(
       CONSTANTS.SIZE_GROUND / scale,

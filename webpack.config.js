@@ -35,6 +35,33 @@ module.exports = {
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
+    chunkFilename: "[name].js",
+  },
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        // vendor chunk
+        vendor: {
+          // name of the chunk
+          name: "vendor",
+          // async + async chunks
+          chunks: "all",
+          // import file path containing node_modules
+          test: /node_modules/,
+          // priority
+          priority: 20,
+        },
+        common: {
+          name: "common",
+          minChunks: 2,
+          chunks: "async",
+          priority: 10,
+          reuseExistingChunk: true,
+          enforce: true,
+        },
+      },
+    },
   },
   devtool: "inline-source-map",
   module: {
@@ -44,7 +71,7 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.(png|svg|jpg|gif|glb)$/,
         use: ["file-loader"],
       },
     ],
