@@ -17,11 +17,15 @@ import {
   loadMountains,
   loadTree,
   loadVisitor,
+  loadSun,
+  loadClouds,
 } from "./scene/objectLoader";
 import Stats from "./libs/jsm/libs/stats.module.js";
 import setUpCamera from "./scene/Camera";
 import setUpLight from "./scene/light";
 import setUpScene from "./scene/Scene";
+import loadAnimals from "./scene/objectLoader/loadAnimals";
+import { updateAnimalPosition } from "./utils/animal";
 
 // Run
 let stats;
@@ -55,6 +59,9 @@ function init() {
   loadTree(globalVar);
   loadVisitor(globalVar);
   loadMountains(globalVar, loader);
+  loadSun(globalVar, loader);
+  loadClouds(globalVar, loader);
+  loadAnimals(globalVar, loader);
 
   // Renderer
   setUpRenderer(globalVar);
@@ -76,8 +83,8 @@ function init() {
   globalVar.container.appendChild(stats.dom);
 
   // Axes
-  var axesHelper = new THREE.AxesHelper(2000);
-  globalVar.scene.add(axesHelper);
+  // var axesHelper = new THREE.AxesHelper(2000);
+  // globalVar.scene.add(axesHelper);
 }
 
 // Animate
@@ -90,6 +97,10 @@ function render() {
   if (globalVar.controls.isLocked === true) {
     let delta = clock.getDelta();
 
+    // Animals Update
+    updateAnimalPosition(globalVar, delta);
+
+    // Visitor Update
     updateVelocity(globalVar, delta);
     detectCollision(globalVar);
     keepInsideWorld(globalVar);

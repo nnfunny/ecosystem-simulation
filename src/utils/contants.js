@@ -7,6 +7,8 @@ let CONSTANTS = {
   SIZE_GROUND: 3000,
   REAPEAT: 64,
   N_TREE: 300,
+  N_CLOUDS: 100,
+  N_ANIMALS: 10,
   INITAL_POSITION: { x: 0, y: 10, z: 0 },
   VISITOR: {
     color: 0xe0c99d,

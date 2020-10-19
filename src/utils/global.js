@@ -6,6 +6,7 @@ export default function Global() {
   this.renderer = null;
   this.controls = null;
   this.collidableMeshList = [];
+  this.animals = [];
   this.onObjectRay = false;
   this.move = {
     moveForward: false,

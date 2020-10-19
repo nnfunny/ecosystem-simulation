@@ -6,7 +6,7 @@ export default function setUpCamera(globalVar) {
     45,
     CONSTANTS.SCREEN_WIDTH / CONSTANTS.SCREEN_HEIGHT,
     1,
-    CONSTANTS.SIZE_GROUND / 2
+    CONSTANTS.SIZE_GROUND
   );
   globalVar.camera.position.set(
     CONSTANTS.INITAL_POSITION.x,

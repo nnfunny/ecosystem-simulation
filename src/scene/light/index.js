@@ -4,7 +4,7 @@ import Light from "./Light.js";
 
 export default function setUpLight(globalVar) {
   globalVar.scene.add(new THREE.AmbientLight(CONSTANTS.SUNSHINE_COLOR));
-  let lightObject = new Light(200, 450, 500, CONSTANTS.SUNSHINE_COLOR, 1.5);
+  let lightObject = new Light(1000, 1000, 1000, CONSTANTS.SUNSHINE_COLOR, 1.5);
   let light = lightObject.create();
   globalVar.scene.add(light);
 }
